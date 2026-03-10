@@ -4,41 +4,51 @@ import Doctor from "../models/doctorModel.js";
 
 export const createAppointment = async (req, res) => {
   try {
-    const { doctorId, patientId, slotTime, date, purpose } = req.body;
+    const { doctorId, patientId, slotTime, purpose } = req.body;
 
-    if (!doctorId || !patientId || !slotTime || !date) {
-      return res
-        .status(400)
-        .json({ message: "doctorId, patientId, date and slotTime required" });
-    }
-
-    const slotDateTime = new Date(`${date}T${slotTime}:00`);
-
-    if (isNaN(slotDateTime.getTime())) {
-      return res.status(400).json({ message: "Invalid slot time" });
+    if (!doctorId || !patientId || !slotTime) {
+      return res.status(400).json({
+        message: "doctorId, patientId and slotTime required",
+      });
     }
 
     const appointment = await Appointment.create({
       doctorId,
       patientId,
-      slotTime: slotDateTime,
+      slotTime,
       purpose,
       createdBy: req.user._id,
     });
-
+    await logAction({
+      userId: req.user._id,
+      role: req.user.role,
+      action: "CREATE_APPOINTMENT",
+      entity: "Appointment",
+      entityId: appointment._id,
+      metadata: {
+        doctorId,
+        patientId,
+      },
+    });
     res.status(201).json({
       message: "Appointment booked successfully",
       data: appointment,
     });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ message: "This slot is already booked" });
+      return res.status(400).json({
+        message: "This slot is already booked",
+      });
     }
 
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Appointment creation error:", error);
+
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
+
 export const getAppointments = async (req, res) => {
   try {
     const { role, _id } = req.user;
