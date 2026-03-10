@@ -165,28 +165,27 @@ export default function SchedulerPage() {
 
             return (
               <button
-                key={slot.time}
-                disabled={isBooked}
-                onClick={() => setSelectedSlot(slot.time)}
+                key={`${slot?.time}-${index}`}
+                disabled={Boolean(isBooked)}
+                onClick={() => !isBooked && setSelectedSlot(slot?.time)}
                 className={`
-                  px-4 py-2
-                  text-sm
-                  rounded-lg
-                  border
-                  transition-all
-                  duration-200
-                  shadow-sm
-
-                  ${
-                    isBooked
-                      ? "border-red-200 text-red-400 bg-red-50 cursor-not-allowed"
-                      : isSelected
-                        ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                        : "border-emerald-200 bg-emerald-50 hover:bg-blue-50 hover:border-blue-300 hover:shadow"
-                  }
-                `}
+    px-4 py-2
+    text-sm
+    rounded-lg
+    border
+    transition-all
+    duration-200
+    shadow-sm
+    ${
+      isBooked
+        ? "border-red-200 text-red-400 bg-red-50 cursor-not-allowed"
+        : isSelected
+          ? "bg-blue-600 text-white border-blue-600 shadow-md"
+          : "border-emerald-200 bg-emerald-50 hover:bg-blue-50 hover:border-blue-300 hover:shadow"
+    }
+  `}
               >
-                {slot.time}
+                {slot?.time || "N/A"}
               </button>
             );
           })}
