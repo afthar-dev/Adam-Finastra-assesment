@@ -116,6 +116,19 @@ function QueueItem({ appointment }) {
 }
 
 function AppointmentItem({ appointment }) {
+  const slotDate = new Date(appointment.slotTime);
+
+  const date = slotDate.toLocaleDateString([], {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const time = slotDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
       <div>
@@ -126,14 +139,11 @@ function AppointmentItem({ appointment }) {
         <p className="text-xs text-slate-400">
           {appointment.purpose || "General consultation"}
         </p>
+
+        <p className="text-xs text-slate-400 mt-1">{date}</p>
       </div>
 
-      <div className="text-sm text-slate-500">
-        {new Date(appointment.slotTime).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-      </div>
+      <div className="text-sm text-slate-500">{time}</div>
     </div>
   );
 }
