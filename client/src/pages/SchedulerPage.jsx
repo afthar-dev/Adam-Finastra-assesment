@@ -166,7 +166,8 @@ export default function SchedulerPage() {
 
               const isBooked = status === "available" ? false : true;
               const isSelected = selectedSlot === time;
-
+              console.log("SLOTS:", slots);
+              console.log("FIRST SLOT:", slots?.[0]);
               return (
                 <button
                   key={`${time}-${index}`}
