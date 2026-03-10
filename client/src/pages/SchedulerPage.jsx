@@ -159,13 +159,13 @@ export default function SchedulerPage() {
         )}
 
         <div className="flex flex-wrap gap-3">
-          {slots.map((slot) => {
+          {slots.map((slot, index) => {
             const isBooked = slot.status === "booked";
             const isSelected = selectedSlot === slot.time;
 
             return (
               <button
-                key={`${slot?.time}-${slot?.status}`}
+                key={slot?.time || index}
                 disabled={Boolean(isBooked)}
                 onClick={() => !isBooked && setSelectedSlot(slot?.time)}
                 className={`
