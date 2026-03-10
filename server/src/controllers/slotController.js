@@ -30,8 +30,8 @@ export const getSlots = async (req, res) => {
 
     let slots = generateSlots(start, end, doctor.slotDuration);
 
-    // remove break slots
-    if (doctor.breakTimes && doctor.breakTimes.length > 0) {
+    /* remove break times */
+    if (doctor.breakTimes?.length) {
       doctor.breakTimes.forEach((breakTime) => {
         const [bStartHour, bStartMin] = breakTime.start.split(":");
         const [bEndHour, bEndMin] = breakTime.end.split(":");
@@ -43,7 +43,6 @@ export const getSlots = async (req, res) => {
           bStartHour,
           bStartMin,
         );
-
         const breakEnd = new Date(year, month - 1, day, bEndHour, bEndMin);
 
         slots = slots.filter(
@@ -52,7 +51,7 @@ export const getSlots = async (req, res) => {
       });
     }
 
-    // remove past slots for today
+    /* remove past slots if date is today */
     const now = new Date();
 
     if (
@@ -63,25 +62,24 @@ export const getSlots = async (req, res) => {
       slots = slots.filter((slot) => slot > now);
     }
 
-    // fetch booked appointments
+    /* fetch appointments for that day */
     const appointments = await Appointment.find({
       doctorId,
       slotTime: { $gte: start, $lt: end },
     });
 
-    // convert booked appointments to HH:MM strings
+    /* build booked slot set */
     const bookedSet = new Set(
-      appointments.map((a) =>
-        a.slotTime.toLocaleTimeString("en-IN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }),
-      ),
+      appointments.map((a) => {
+        const d = new Date(a.slotTime);
+        return `${d.getHours()}:${d.getMinutes()}`;
+      }),
     );
 
-    // generate final result
+    /* generate response */
     const result = slots.map((slot) => {
+      const key = `${slot.getHours()}:${slot.getMinutes()}`;
+
       const time = slot.toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit",
@@ -90,11 +88,11 @@ export const getSlots = async (req, res) => {
 
       return {
         time,
-        status: bookedSet.has(time) ? "booked" : "available",
+        status: bookedSet.has(key) ? "booked" : "available",
       };
     });
 
-    res.json({
+    return res.json({
       message: "Slots fetched successfully",
       data: result,
     });
