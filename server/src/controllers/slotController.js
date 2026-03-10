@@ -23,19 +23,17 @@ export const getSlots = async (req, res) => {
     const [year, month, day] = date.split("-");
 
     const [startHour, startMinute] = doctor.workingHours.start.split(":");
-
     const [endHour, endMinute] = doctor.workingHours.end.split(":");
 
     const start = new Date(year, month - 1, day, startHour, startMinute);
-
     const end = new Date(year, month - 1, day, endHour, endMinute);
 
     let slots = generateSlots(start, end, doctor.slotDuration);
 
+    // remove break slots
     if (doctor.breakTimes && doctor.breakTimes.length > 0) {
       doctor.breakTimes.forEach((breakTime) => {
         const [bStartHour, bStartMin] = breakTime.start.split(":");
-
         const [bEndHour, bEndMin] = breakTime.end.split(":");
 
         const breakStart = new Date(
@@ -54,14 +52,15 @@ export const getSlots = async (req, res) => {
       });
     }
 
-    const today = new Date();
+    // remove past slots for today
+    const now = new Date();
 
     if (
-      today.getFullYear() == year &&
-      today.getMonth() == month - 1 &&
-      today.getDate() == day
+      now.getFullYear() == year &&
+      now.getMonth() == month - 1 &&
+      now.getDate() == day
     ) {
-      slots = slots.filter((slot) => slot > today);
+      slots = slots.filter((slot) => slot > now);
     }
 
     // fetch booked appointments
@@ -70,17 +69,30 @@ export const getSlots = async (req, res) => {
       slotTime: { $gte: start, $lt: end },
     });
 
-    const bookedSlots = appointments.map((a) => a.slotTime.getTime());
+    // convert booked appointments to HH:MM strings
+    const bookedSet = new Set(
+      appointments.map((a) =>
+        a.slotTime.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      ),
+    );
 
-    const result = slots.map((slot) => ({
-      time: slot.toLocaleTimeString([], {
+    // generate final result
+    const result = slots.map((slot) => {
+      const time = slot.toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
-      }),
+      });
 
-      status: bookedSlots.includes(slot.getTime()) ? "booked" : "available",
-    }));
+      return {
+        time,
+        status: bookedSet.has(time) ? "booked" : "available",
+      };
+    });
 
     res.json({
       message: "Slots fetched successfully",
