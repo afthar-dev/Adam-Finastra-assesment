@@ -159,36 +159,40 @@ export default function SchedulerPage() {
         )}
 
         <div className="flex flex-wrap gap-3">
-          {slots.map((slot, index) => {
-            const isBooked = slot.status === "booked";
-            const isSelected = selectedSlot === slot.time;
+          {Array.isArray(slots) &&
+            slots.map((slot, index) => {
+              const time = slot?.time || "";
+              const status = slot?.status?.toLowerCase?.();
 
-            return (
-              <button
-                key={index}
-                disabled={Boolean(isBooked)}
-                onClick={() => !isBooked && setSelectedSlot(slot?.time)}
-                className={`
-    px-4 py-2
-    text-sm
-    rounded-lg
-    border
-    transition-all
-    duration-200
-    shadow-sm
-    ${
-      isBooked
-        ? "border-red-200 text-red-400 bg-red-50 cursor-not-allowed"
-        : isSelected
-          ? "bg-blue-600 text-white border-blue-600 shadow-md"
-          : "border-emerald-200 bg-emerald-50 hover:bg-blue-50 hover:border-blue-300 hover:shadow"
-    }
-  `}
-              >
-                {slot?.time || "N/A"}
-              </button>
-            );
-          })}
+              const isBooked = status === "booked";
+              const isSelected = selectedSlot === time;
+
+              return (
+                <button
+                  key={`${time}-${index}`}
+                  disabled={isBooked}
+                  onClick={() => !isBooked && setSelectedSlot(time)}
+                  className={`
+          px-4 py-2
+          text-sm
+          rounded-lg
+          border
+          transition-all
+          duration-200
+          shadow-sm
+          ${
+            isBooked
+              ? "border-red-200 text-red-400 bg-red-50 cursor-not-allowed"
+              : isSelected
+                ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                : "border-emerald-200 bg-emerald-50 hover:bg-blue-50 hover:border-blue-300 hover:shadow"
+          }
+        `}
+                >
+                  {time || "N/A"}
+                </button>
+              );
+            })}
         </div>
       </div>
 
