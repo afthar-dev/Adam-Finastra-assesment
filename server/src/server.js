@@ -10,17 +10,20 @@ import slotRoutes from "./routes/slot.routes.js";
 import patientRoutes from "./routes/patients.routes.js";
 import appointmentRoutes from "./routes/appoinments.routes.js";
 import auditRoutes from "./routes/audit.routes.js";
+import helmet from "helmet";
 
 const app = express();
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin:
+    "http://localhost:5173" || "https://adam-finastra-assesment.vercel.app/",
   credentials: true,
 };
 
 // Connect to MongoDB
 connectDb();
 // Middleware
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
