@@ -4,21 +4,32 @@ import Doctor from "../models/doctorModel.js";
 
 export const createAppointment = async (req, res) => {
   try {
-    const { doctorId, patientId, slotTime, purpose } = req.body;
+    const { doctorId, patientId, slotTime, date, purpose } = req.body;
 
-    if (!doctorId || !patientId || !slotTime) {
+    if (!doctorId || !patientId || !slotTime || !date) {
       return res.status(400).json({
-        message: "doctorId, patientId and slotTime required",
+        message: "doctorId, patientId, date and slotTime required",
+      });
+    }
+
+    // Build the Date only once here
+    const slotDateTime = new Date(`${date}T${slotTime}:00`);
+
+    // Safety validation
+    if (isNaN(slotDateTime.getTime())) {
+      return res.status(400).json({
+        message: "Invalid slot time",
       });
     }
 
     const appointment = await Appointment.create({
       doctorId,
       patientId,
-      slotTime,
+      slotTime: slotDateTime,
       purpose,
       createdBy: req.user._id,
     });
+
     await logAction({
       userId: req.user._id,
       role: req.user.role,
@@ -30,6 +41,7 @@ export const createAppointment = async (req, res) => {
         patientId,
       },
     });
+
     res.status(201).json({
       message: "Appointment booked successfully",
       data: appointment,
@@ -48,7 +60,6 @@ export const createAppointment = async (req, res) => {
     });
   }
 };
-
 export const getAppointments = async (req, res) => {
   try {
     const { role, _id } = req.user;

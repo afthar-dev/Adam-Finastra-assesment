@@ -32,16 +32,16 @@ export default function SchedulerPage() {
       return;
     }
 
-    const slotTime = new Date(`${date}T${selectedSlot}`);
-
     await createAppointment({
       doctorId,
       patientId,
-      slotTime,
+      date,
+      slotTime: selectedSlot,
       purpose: "",
     });
 
     toast.success("Appointment booked");
+
     setSelectedSlot("");
     fetchSlots(doctorId, date);
   };
