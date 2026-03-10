@@ -15,16 +15,23 @@ import helmet from "helmet";
 const app = express();
 
 const corsOptions = {
-  origin:
-    "http://localhost:5173" || "https://adam-finastra-assesment.vercel.app/",
+  origin: [
+    "http://localhost:5173",
+    "https://adam-finastra-assesment.vercel.app/",
+  ],
   credentials: true,
 };
 
 // Connect to MongoDB
 connectDb();
 // Middleware
-app.use(helmet());
 app.use(cors(corsOptions));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
