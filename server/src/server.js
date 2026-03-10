@@ -18,6 +18,7 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "https://adam-finastra-assesment.vercel.app/",
+    /\.vercel\.app$/,
   ],
   credentials: true,
 };
