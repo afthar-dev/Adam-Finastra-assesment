@@ -1,9 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.PROD
-    ? "https://adam-finastra-assesment.onrender.com/api"
-    : "http://localhost:5000/api",
+  baseURL: "https://adam-finastra-assesment.onrender.com/api",
   withCredentials: true,
 });
 
