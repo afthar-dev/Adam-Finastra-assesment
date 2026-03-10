@@ -164,7 +164,7 @@ export default function SchedulerPage() {
               const time = slot?.time || "";
               const status = slot?.status?.toLowerCase?.();
 
-              const isBooked = status === "booked";
+              const isBooked = status === "available" ? false : true;
               const isSelected = selectedSlot === time;
 
               return (
