@@ -165,7 +165,7 @@ export default function SchedulerPage() {
 
             return (
               <button
-                key={slot?.time || index}
+                key={index}
                 disabled={Boolean(isBooked)}
                 onClick={() => !isBooked && setSelectedSlot(slot?.time)}
                 className={`
