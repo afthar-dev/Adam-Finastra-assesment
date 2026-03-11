@@ -50,7 +50,7 @@ export default function AddPatientModal({ onClose, patient }) {
 
       const payload = {
         ...form,
-        dob: form.dob ? new Date(form.dob).toISOString() : null,
+        dob: form.dob || null,
       };
 
       if (isEdit) {
@@ -101,7 +101,6 @@ export default function AddPatientModal({ onClose, patient }) {
             <option value="">Select gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
-            <option value="other">Other</option>
           </select>
         </div>
 

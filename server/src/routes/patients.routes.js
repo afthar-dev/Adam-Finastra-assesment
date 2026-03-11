@@ -37,6 +37,11 @@ router.put(
   updatePatient,
 );
 
-router.delete("/:id", protect, hasRole(["superadmin"]), deletePatient);
+router.delete(
+  "/:id",
+  protect,
+  hasRole(["superadmin", "receptionist"]),
+  deletePatient,
+);
 
 export default router;
